@@ -25,7 +25,7 @@
 ` to set another host
 - tried `unset docker`, it worked
 - now undoing the whole auto thing with
-`
+```
 # Remove old DOCKER_HOST setting
 sed -i '/DOCKER_HOST/d' ~/.bashrc
 
@@ -34,5 +34,5 @@ echo 'export DOCKER_HOST=unix:///var/run/docker.sock' >> ~/.bashrc
 
 # Reload shell config
 source ~/.bashrc
-`
+```
 - retrying `docker compose up -d`
