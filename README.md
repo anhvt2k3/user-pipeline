@@ -2,7 +2,7 @@
 - create .venv
 - install apache-airflow
 - create the kafka_stream
-- airflow only support Linux
+- airflow only support Linux, so the env must be compatible to Linux
 - recreate .venv
 - trying auto activate env on creating terminal
 - too messy, just use every time 
