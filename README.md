@@ -42,3 +42,19 @@ source ~/.bashrc
 - now, chema-registry is down
 - another typos, compared it to the origin config and fixed
 - the host compose is online
+- next compose will need re-compose
+`
+docker compose up -d
+`
+
+- going to `localhost:9021` for control-center
+  - found this docs for all possible confluent stacks to manage Kafka `https://github.com/confluentinc/cp-all-in-one/blob/8.0.0-post/cp-all-in-one-community/docker-compose.yml`
+- just found out that we're using 'cp-sever' = 'cp-kafka' + CP's features
+- btw CP = Confluent Platform
+- created a new docs for all the possible essential information `https://docs.google.com/document/d/1b_S07-Uz0RnirVdfd7Nsi7gBfiIvXP4RxbtOA4SbngA/edit?usp=sharing`
+- just a reminder the running script should be `python dags/kafka_stream.py`
+  
+- trying to connect data stream to kafka once
+  - making a connection
+  - created a new topic 
+  - close the connection
