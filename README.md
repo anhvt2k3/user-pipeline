@@ -36,3 +36,9 @@ echo 'export DOCKER_HOST=unix:///var/run/docker.sock' >> ~/.bashrc
 source ~/.bashrc
 ```
 - retrying `docker compose up -d`
+- container broker is error
+- gpt said that image should be 'cp-kafka' but it is 'cp-zookeeper' in the original project
+- discovered some mistypes using DiffChecker
+- now, chema-registry is down
+- another typos, compared it to the origin config and fixed
+- the host compose is online
