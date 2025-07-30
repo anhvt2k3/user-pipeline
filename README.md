@@ -71,3 +71,12 @@ docker compose up -d
   - `$(command -v pip)` dynamically find `pip` and execute with the flag behind
   - `&&` conjunction to a command
   - `exec` conclude everything above then run this
+
+- now we're ready for a compose up again
+- teacher's worked, i failed despite his mistypo in entrypoint.sh dir
+- got this `webserver-1      | exec /opt/airflow/script/entrypoint.sh: no such file or directory`
+- doing this `sudo apt install dos2unix  # Ubuntu`, done with some stranges
+- not fixing it
+- mabe missing this to open its 'executibility' `chmod +x ./script/entrypoint.sh`
+- composing down, mabe the latest yaml is not used // didnt help
+- retried with connecting the folder only // not helping
