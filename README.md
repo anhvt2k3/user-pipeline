@@ -80,3 +80,16 @@ docker compose up -d
 - mabe missing this to open its 'executibility' `chmod +x ./script/entrypoint.sh`
 - composing down, mabe the latest yaml is not used // didnt help
 - retried with connecting the folder only // not helping
+
+- removing `version: '3'` since copilot said new Compose v2+ do not require
+- copilot: problem is with non executable `script/entrypoint.sh`, need `chmod +x ...` for it
+- copilot: serious typos in entrypoint.sh
+
+- the tutorial skipping the making of `requirements.txt` file
+- problem: airflow using 3.9 while auto created env is py3.10
+- solution:
+```
+image: apache/airflow:2.6.0-python3.10
+>> pip freeze > requirements.txt
+```, not helping
+- 

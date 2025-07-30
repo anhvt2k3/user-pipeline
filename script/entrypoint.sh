@@ -1,11 +1,11 @@
-#!bin/bash
+#!/bin/bash
 set -e
 
-if [ -e "opt/airflow/requirement.txt" ]; then 
-    $(command -v pip) install --user -r requirement.txt
+if [ -e "/opt/airflow/requirements.txt" ]; then 
+    $(command -v pip) install --user -r /opt/airflow/requirements.txt
 fi
 
-if [ ! -f "opt/airflow/airflow.db" ]; then
+if [ ! -f "/opt/airflow/airflow.db" ]; then
     airflow db init && \
     airflow user create \
         --username admin \
