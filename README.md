@@ -61,3 +61,13 @@ docker compose up -d
 - `docker compose down` = opposite of `docker compose up` (stop the containers and remove all of them)
 
 - added webserver for apache-airflow with a bunch of fields
+- adding script/entrypoint: cmds to follow while intializing the webserver or the scheduler (airflow service)
+- entrypoint:
+  - `#!bin/bash` this should be executed using Bash shell
+  - `set -e` rollback the moment one of them fail
+  - `[ -e ... ]` if condition to check the existence of the file in ...
+  - `!` is not
+  - `-f` is applying `-e` AND it is a regular file (not a directory/link/...)
+  - `$(command -v pip)` dynamically find `pip` and execute with the flag behind
+  - `&&` conjunction to a command
+  - `exec` conclude everything above then run this
