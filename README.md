@@ -58,3 +58,6 @@ docker compose up -d
   - making a connection
   - created a new topic 
   - close the connection
+- `docker compose down` = opposite of `docker compose up` (stop the containers and remove all of them)
+
+- added webserver for apache-airflow with a bunch of fields
