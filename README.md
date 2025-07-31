@@ -99,3 +99,22 @@ image: apache/airflow:2.6.0-python3.10
 
 - final-solution: Airflow had everything it needs, only not-standard packages is needed in `requirements.txt` file (aka `kafka-python` at this point)
 - also, entrypoint had some typos
+
+- advanced options for automation:
+```
+# Remove any old requirements to avoid duplication
+rm -f dags-requirements.txt plugins-requirements.txt merged-requirements.txt
+
+# Generate pipreqs-based requirements for dags/
+pipreqs ./dags --force --savepath dags-requirements.txt
+
+# Generate pipreqs-based requirements for plugins/
+pipreqs ./plugins --force --savepath plugins-requirements.txt
+
+# Combine and deduplicate all requirements
+cat dags-requirements.txt plugins-requirements.txt | sort | uniq > merged-requirements.txt
+
+# (Optional) Rename it to requirements.txt if you want to mount into Airflow container
+cp merged-requirements.txt requirements.txt
+```
+
