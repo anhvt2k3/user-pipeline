@@ -134,7 +134,7 @@ services:
       - confluent
 
   scheduler:
-    image: apache/airflow:2.6.0-python3.9
+    image: apache/airflow:2.6.0-python3.10
     depends_on:
       webserver:
         condition: service_healthy

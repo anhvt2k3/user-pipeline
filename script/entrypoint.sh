@@ -7,11 +7,11 @@ fi
 
 if [ ! -f "/opt/airflow/airflow.db" ]; then
     airflow db init && \
-    airflow user create \
+    airflow users create \
         --username admin \
         --firstname admin \
         --lastname admin \
-        --role admin \
+        --role Admin \
         --email admin@example.com \
         --password admin
 fi

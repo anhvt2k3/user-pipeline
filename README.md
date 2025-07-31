@@ -91,5 +91,11 @@ docker compose up -d
 ```
 image: apache/airflow:2.6.0-python3.10
 >> pip freeze > requirements.txt
-```, not helping
-- 
+```
+- not helping
+
+- just afraid that skipping finding out how to write this `requirements.txt` file will make this problem never be considered ever again
+- mabe i should just deal with the error base on what the log said?
+
+- final-solution: Airflow had everything it needs, only not-standard packages is needed in `requirements.txt` file (aka `kafka-python` at this point)
+- also, entrypoint had some typos
