@@ -118,3 +118,13 @@ cat dags-requirements.txt plugins-requirements.txt | sort | uniq > merged-requir
 cp merged-requirements.txt requirements.txt
 ```
 
+- bootstrap_servers is broker:29092, Producer produce in there and Kafka distribute the products 
+- `stream_data()` activated (for today), get 1 data after DAG is activated again
+- Airflow recognized that in its webserver
+- you can make it execute manually using the switch button next to the DAG's name
+
+- current Airflow configuration in `docker-compose` is inspired by its creator guide at `https://airflow.apache.org/docs/apache-airflow/3.0.3/docker-compose.yaml`
+- creator guide is the general version make use of all the included components
+- `<<`: spread the configuration stored in the previously set variable (line begin with `&`). Inherited configs can be overwrite on
+- 1 Airflow image can run in many modes, setting `command` field will change this mode
+- normally Airflow compose require airflow-init, but in this project those steps are cut off through manual setting up via `entrypoint.sh`
