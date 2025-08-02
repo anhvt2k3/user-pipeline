@@ -128,5 +128,15 @@ cp merged-requirements.txt requirements.txt
 - `<<`: spread the configuration stored in the previously set variable (line begin with `&`). Inherited configs can be overwrite on
 - 1 Airflow image can run in many modes, setting `command` field will change this mode
 - normally Airflow compose require `airflow-init` instance, but in this project those steps are cut off through manual setting up via `entrypoint.sh`
+- Airflow must comes with a Postgres service too
 
 - `stream_data()` is updated to stream data continuously in 1 minutes
+
+- adding Spark as consumers, 1 worker - 1 master system
+- more worker of the same config can be added by completely copy-paste the first worker (but *do change the service's name of the new workers*)
+- spark-worker must have 1gb memory minimum
+
+- Cassandra: a NoSQL db, using BigTable (not JSON like MongoDB).
+- Data is in tables, no Joining support, only simple query included, usable mostly for Logging, IoT processing, Realtime apps.
+
+- next step: writting steps for Spark
