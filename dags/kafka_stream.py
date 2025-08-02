@@ -39,12 +39,24 @@ def stream_data():
     import json
     from kafka import KafkaProducer
     import time 
+    import logging
     
-    res = get_data()
-    formatted_res = format_data(res)
-    
+    cur_time = time.time()
     producer = KafkaProducer(bootstrap_servers=['broker:29092'], max_block_ms=5000)
-    producer.send('users_created', json.dumps(formatted_res).encode('utf-8'))
+    while True:
+        if time.time() - cur_time > 60:
+            logging.info("1 minutes passed, breaking the loop")
+            break
+        try:
+            res = get_data()
+            formatted_res = format_data(res)
+            producer.send('users_created', json.dumps(formatted_res).encode('utf-8'))
+        except Exception as e:
+            logging.error(f"Error occurred: {e}")
+            continue
+
+    producer.close()
+    logging.info("Streaming completed.")
 
 with DAG('user_automation',
             default_args=default_args,

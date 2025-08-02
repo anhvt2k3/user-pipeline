@@ -127,4 +127,6 @@ cp merged-requirements.txt requirements.txt
 - creator guide is the general version make use of all the included components
 - `<<`: spread the configuration stored in the previously set variable (line begin with `&`). Inherited configs can be overwrite on
 - 1 Airflow image can run in many modes, setting `command` field will change this mode
-- normally Airflow compose require airflow-init, but in this project those steps are cut off through manual setting up via `entrypoint.sh`
+- normally Airflow compose require `airflow-init` instance, but in this project those steps are cut off through manual setting up via `entrypoint.sh`
+
+- `stream_data()` is updated to stream data continuously in 1 minutes
