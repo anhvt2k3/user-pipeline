@@ -138,5 +138,10 @@ cp merged-requirements.txt requirements.txt
 
 - Cassandra: a NoSQL db, using BigTable (not JSON like MongoDB).
 - Data is in tables, no Joining support, only simple query included, usable mostly for Logging, IoT processing, Realtime apps.
+- instead of working with tables, Cassandra works with key_space
 
-- next step: writting steps for Spark
+- next step: writting code for Spark
+- `pip install cassandra-driver spark pyspark`
+
+- data fed by Kafka usually need further processing before storable in a db, they're sometimes sent in binary format
+- in the future, for any example you can search `spark kafka example`, you shall get `https://spark.apache.org/docs/latest/streaming/structured-streaming-kafka-integration.html`
