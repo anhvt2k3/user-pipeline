@@ -63,13 +63,14 @@ def create_spark_connection():
     try:
         s_conn = SparkSession.builder \
             .appName('SparkDataStreaming') \
-            .config('spark.jars.packages', "com.datastax.spark:spark-cassandra-connector_2.13:3.5.1",
-                    "org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.0") \
+            .config('spark.jars.packages', "com.datastax.spark:spark-cassandra-connector_2.12:3.5.1,"
+                    "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1") \
             .config('spark.cassandra.connection.host', 'localhost') \
             .getOrCreate()
         logging.info("Spark session created successfully.")
     except Exception as e:
         logging.error(f"Error creating Spark session: {e}")
+        # raise e
     
     return s_conn
 
@@ -85,6 +86,7 @@ def connect_to_kafka(spark_conn):
         logging.info("Connected to Kafka topic 'users_created' successfully.")
     except Exception as e:
         logging.error(f"Error connecting to Kafka topic: {e}")
+        # raise e
     
     return spark_df
 
@@ -95,6 +97,7 @@ def create_cassandra_connection():
         session = cluster.connect()
     except Exception as e:
         logging.error(f"Error connecting to Cassandra: {e}")
+        # raise e
     return session
 
 def create_selection_df_from_kafka(spark_df):
@@ -113,7 +116,8 @@ def create_selection_df_from_kafka(spark_df):
         T.StructField("picture", T.StringType(), nullable=False),
     ])
     res = spark_df.selectExpr("CAST(value AS STRING)") \
-        .select(F.from_json(F.col("value"), schema).alias("data")).select("data.*")
+        .select(F.from_json(F.col("value"), schema).alias("data")).select("data.*") \
+        .withColumn("id", F.expr("uuid()"))
     print (res)
     return res
 
@@ -134,7 +138,7 @@ if __name__ == "__main__":
             streaming_query = (selected_df.writeStream.format("org.apache.spark.sql.cassandra")
                                 .option('checkpointLocation', '/tmp/checkpoint')
                                 .option('keyspace', 'spark_streams')
-                                .option('table', 'created_users')
+                                .option('table', 'users_created')
                                 .start())
 
             streaming_query.awaitTermination()

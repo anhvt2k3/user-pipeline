@@ -5,10 +5,7 @@
 - airflow only support Linux, so the env must be compatible to Linux
 - recreate .venv
 - trying auto activate env on creating terminal
-- too messy, just use every time 
-`
-    source .venv/bin/activate
-`
+- too messy, just use every time `source .venv/bin/activate`
 - first run worked after 1 ad-hoc error
 - doing the format, done it
 
@@ -145,3 +142,34 @@ cp merged-requirements.txt requirements.txt
 
 - data fed by Kafka usually need further processing before storable in a db, they're sometimes sent in binary format
 - in the future, for any example you can search `spark kafka example`, you shall get `https://spark.apache.org/docs/latest/streaming/structured-streaming-kafka-integration.html`
+
+- at this point, we dont need Schema Registry (or Control Center) anymore
+
+- run the code `spark_stream.py` to check its validity. Seeing this is good
+```
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+```
+
+- `pyspark` folder is disappearing from Explorer: something is wrong with Window in displaying directory from WSL
+- Max Spark version that spark-cassandra-connector support currently is 3.5.1, while that is 4.0.0 for spark-kafka-connector (check `https://mvnrepository.com/`)
+  - a jar name will be like this <package-name>_<scala-version>:<spark-version>
+  - on the MVN Repo site, the Version column that all jar file has is Version of Spark that it supports
+- Therefore, rollback Spark to 3.5.1 is crucial:
+```
+pip uninstall pyspark -y
+pip install pyspark==3.5.1
+```
+- auto download from Spark is sometime unreliable: `.config('spark.jars.packages', "com.datastax.spark:spark-cassandra-connector_2.13:3.5.1,""org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.0") \`
+  - replaceable by manual download & use this line in SparkSession `.config("spark.jars", "jars/spark-cassandra-connector_2.13-3.5.1.jar,""jars/spark-sql-kafka-0-10_2.13-3.5.1.jar")`
+
+- When Spark worked, these in Cassandra will work:
+```
+docker exec -it cassandra cqlsh -u cassandra -p cassandra localhost 9042
+# then
+cassandra@cqlsh> describe spark_streams.created_users;
+```
+
+- jars file specified for Spark is wrong, `pyspark --version` currently at Spark3.5.1 and Scala2.12
+
+- `spark-master` and `spark-worker` might seem inactive on Docker Desktop but it can be found at `localhost:9090` normally *(thus meaning it is active (iguess?))*
