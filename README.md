@@ -161,15 +161,19 @@ pip uninstall pyspark -y
 pip install pyspark==3.5.1
 ```
 - auto download from Spark is sometime unreliable: `.config('spark.jars.packages', "com.datastax.spark:spark-cassandra-connector_2.13:3.5.1,""org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.0") \`
-  - replaceable by manual download & use this line in SparkSession `.config("spark.jars", "jars/spark-cassandra-connector_2.13-3.5.1.jar,""jars/spark-sql-kafka-0-10_2.13-3.5.1.jar")`
+  - replaceable by manual download & use this line in SparkSession `.config("spark.jars", "jars/spark-cassandra-connector_2.12-3.5.1.jar,""jars/spark-sql-kafka-0-10_2.12-3.5.1.jar")`
+  - OR keep the config and copy the correct version jars into `.venv/lib/site-packages/pyspark/jars/` *( hardly work on Windows since not every folder is displayed there)*
 
-- When Spark worked, these in Cassandra will work:
+- jars file specified for Spark is wrong, `pyspark --version` currently at Spark3.5.1 and Scala2.12
+
+- `spark-master` and `spark-worker` can be seen *inactive* on Docker Desktop but it can be found at `localhost:9090` normally *(thus meaning it is active (iguess?))*
+ - *Also that mean the compose file built correctly*
+
+- Running `spark_stream` to create the keyspace and table *(commenting out lines beyond `insert_data()`)*
+
+- When that worked, these in Cassandra will work:
 ```
 docker exec -it cassandra cqlsh -u cassandra -p cassandra localhost 9042
 # then
 cassandra@cqlsh> describe spark_streams.created_users;
 ```
-
-- jars file specified for Spark is wrong, `pyspark --version` currently at Spark3.5.1 and Scala2.12
-
-- `spark-master` and `spark-worker` might seem inactive on Docker Desktop but it can be found at `localhost:9090` normally *(thus meaning it is active (iguess?))*

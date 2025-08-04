@@ -132,13 +132,14 @@ if __name__ == "__main__":
         if cass_ss:
             create_keyspace(cass_ss)
             create_table(cass_ss)
+            # insert_data(cass_ss)
 
-            logging.info("Streaming is being started...")
+            # logging.info("Streaming is being started...")
 
-            streaming_query = (selected_df.writeStream.format("org.apache.spark.sql.cassandra")
-                                .option('checkpointLocation', '/tmp/checkpoint')
-                                .option('keyspace', 'spark_streams')
-                                .option('table', 'users_created')
-                                .start())
+            # streaming_query = (selected_df.writeStream.format("org.apache.spark.sql.cassandra")
+            #                     .option('checkpointLocation', '/tmp/checkpoint')
+            #                     .option('keyspace', 'spark_streams')
+            #                     .option('table', 'users_created')
+            #                     .start())
 
-            streaming_query.awaitTermination()
+            # streaming_query.awaitTermination()
