@@ -164,6 +164,8 @@ services:
 
   spark-master:
     image: bitnami/spark:3.5.1
+    volumes:
+      - ./jars:/opt/bitnami/spark/jars
     # command: bin/spark-class org.apache.spark.deploy.master.Master
     ports:
       - "9090:8080"
@@ -172,6 +174,8 @@ services:
       - confluent
   spark-worker:
     image: bitnami/spark:3.5.1
+    volumes:
+      - ./jars:/opt/bitnami/spark/jars
     # command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
     depends_on:
       - spark-master

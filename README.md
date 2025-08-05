@@ -181,16 +181,16 @@ cassandra@cqlsh> describe spark_streams.created_users;
 - Next step: `spark-submit --master spark://localhost:7077 spark_stream.py`
 - Error connecting to Kafka topic -> Connector problem -> `spark-submit` do not automatically install the required jars
 
-- **New information:**
+**New information:**
   - This line is to validate the Spark version in the container when needed: `docker exec -it realtime-streaming-spark-master-1 spark-submit --version`
-  - Runnning `spark_stream` with WSL kafka server at 'broker:29092' wont be recognized
+  - Runnning `spark_stream` on WSL, Kafka at 'localhost:9092' wont be recognized *not for on spark-master*
 
 - `spark-submit` cannot handle method `connect_to_kafka()`:
   - tried `networks: confluent: bridge` -> webserver breaks down if without `compose down` -> all are healthy -> spark-submit fails -> tried `host.docker.internal:9092` -> fails
   - trying `host.docker.internal:9092` without network-driver-bridge'
   - trying `spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1,com.datastax.spark:spark-cassandra-connector_2.12:3.5.1 spark_stream.py` -> worked
 - when it works, you shall see this:
-  - On `spark-submit` terminal
+  - On `spark-submit` terminal:
     ```
     25/08/05 11:31:34 INFO MicroBatchExecution: Streaming query made progress: {
       "id" : "71a723a1-6b75-4964-bf07-7d1dd61e25a1",
@@ -202,8 +202,38 @@ cassandra@cqlsh> describe spark_streams.created_users;
       "inputRowsPerSecond" : 0.0,
       "processedRowsPerSecond" : 32.98254620123203,
     ```
-  - Cassandra side:
+  - Cassandra side, lines below shall looks good:
+    * cqlsh access: `docker exec -it cassandra cqlsh -u cassandra -p cassandra localhost 9042`
+    * describe working table: `describe spark_streams.users_created;`
+    * checking table: `select * from spark_streams.users_created;`
 
-
-
+## Optimizing
 - Trying to embbed required connectors, thus minimize this line `spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1,com.datastax.spark:spark-cassandra-connector_2.12:3.5.1 spark_stream.py`
+  - Rerun testing on local: `python3 spark_stream.py 1 0`
+  - Spark container jars location: `opt/bitnami/spark/jars/`
+  - Adding this to compose: `volumes: - ./jars:/opt/bitnami/spark/jars`
+
+## Wrapping up development (scratch)
+- Specify pipeline architecture
+- Write docker-compose
+  - Decide the images
+  - Decide the ports
+  - Decide the networks
+  - Decide the volumes
+- Write the DAG file
+- Test DAG file
+- Test Airflow
+- Trigger written DAG manually
+- Test Control Center
+- Write Spark streaming
+  - Consume Kafka and feed to Cassandra
+  - Decide the flow
+  - Decide connectors
+    - Integrate the **versions** of connectors with **Spark** and **Scala**
+- Test Spark code
+- Test Cassandra consumption
+- Submit Spark code and test
+
+## Future application
+- Streaming pipelines for logs
+- ML integration for models: prediction, feature extraction...

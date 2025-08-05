@@ -7,6 +7,7 @@ from pyspark.sql import SparkSession, functions as F, types as T
 
 import platform
 LOCALLY = False
+STANDARD = False
 
 def create_keyspace(session):
     session.execute("""
@@ -64,18 +65,27 @@ def insert_data(session, **kwargs):
 def create_spark_connection():
     s_conn = None
     try:
-        # import glob
-        # s_conn = SparkSession.builder \
-        #     .appName('SparkDataStreaming') \
-        #     .config("spark.jars", ",".join(glob.glob("jars/*.jar"))) \
-        #     .config('spark.cassandra.connection.host', 'localhost') \
-        #     .getOrCreate()
-        s_conn = SparkSession.builder \
-            .appName('SparkDataStreaming') \
-            .config('spark.jars.packages', "com.datastax.spark:spark-cassandra-connector_2.12:3.5.1,"
-                    "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1") \
-            .config('spark.cassandra.connection.host', 'localhost') \
-            .getOrCreate()
+        if STANDARD:
+            s_conn = SparkSession.builder \
+                .appName('SparkDataStreaming') \
+                .config('spark.jars.packages', "com.datastax.spark:spark-cassandra-connector_2.12:3.5.1,"
+                        "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1") \
+                .config('spark.cassandra.connection.host', 'localhost') \
+                .getOrCreate()
+        elif LOCALLY:
+            import glob
+            import os
+            
+            jar_folder = os.path.abspath("jars")  # absolute path to folder
+            jar_files = glob.glob(os.path.join(jar_folder, "*.jar"))
+            s_conn = SparkSession.builder \
+                .appName('SparkDataStreaming') \
+                .config("spark.jars", ",".join(jar_files)) \
+                .config('spark.cassandra.connection.host', 'localhost') \
+                .getOrCreate()
+            logging.warning(f"Spark session created with preloaded jars: {jar_files}")
+            
+        # s_conn.sparkContext.setLogLevel("INFO")
         logging.info("Spark session created successfully.")
     except Exception as e:
         logging.error(f"Error creating Spark session: {e}")
@@ -86,7 +96,7 @@ def create_spark_connection():
 def connect_to_kafka(spark_conn):
     spark_df = None
     try:
-        if True:
+        if True | STANDARD:
             spark_df = spark_conn.readStream \
                 .format("kafka") \
                 .option("kafka.bootstrap.servers", "localhost:9092") \
@@ -94,6 +104,7 @@ def connect_to_kafka(spark_conn):
                 .option("startingOffsets", "earliest") \
                 .load()
         else:
+            #* This just dont work locally or on spark-master
             spark_df = spark_conn.readStream \
                 .format("kafka") \
                 .option("kafka.bootstrap.servers", "broker:29092") \
@@ -139,6 +150,11 @@ def create_selection_df_from_kafka(spark_df):
     return res
 
 if __name__ == "__main__":
+    # spark_Stream.py LOCALLY:[1|0] STANDARD:[1|0]
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == '1': LOCALLY = True
+    if len(sys.argv) > 2 and sys.argv[2] == '1': STANDARD = True
+    logging.warning(f"Running spark_stream.py in {'non-' if not LOCALLY else ''}LOCALLY and {'non-' if not STANDARD else ''}STANDARD mode.")
     spark_conn = create_spark_connection()
     
     if spark_conn:
@@ -149,7 +165,7 @@ if __name__ == "__main__":
         if cass_ss:
             create_keyspace(cass_ss)
             create_table(cass_ss)
-            if LOCALLY: exit(0)  # For development, exit after creating keyspace and table
+            if LOCALLY: sys.exit(0)  # For development, exit after creating keyspace and table
 
             logging.info("Streaming is being started...")
 

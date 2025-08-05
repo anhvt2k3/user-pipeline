@@ -1,0 +1,14 @@
+python3 spark_stream.py 1 0
+WARNING:root:Running spark_stream.py in LOCALLY and non-STANDARD mode.
+25/08/05 17:02:54 WARN Utils: Your hostname, DESKTOP-I5IUEJD resolves to a loopback address: 127.0.1.1; u
+sing 172.20.248.41 instead (on interface eth0)                                                           25/08/05 17:02:54 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+25/08/05 17:02:58 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using 
+builtin-java classes where applicable                                                                    Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+WARNING:root:Spark session created with preloaded jars: ['/home/vta/projects/realtime-streaming/jars/spar
+k-cassandra-connector_2.12-3.5.1.jar', '/home/vta/projects/realtime-streaming/jars/spark-sql-kafka-0-10_2.12-3.5.1.jar', '/home/vta/projects/realtime-streaming/jars/kafka-clients-3.5.1.jar']                    spark_df selection applied:  DataFrame[id: string, first_name: string, last_name: string, gender: string,
+ address: string, postcode: string, email: string, username: string, dob: string, registered_data: string, phone: string, picture: string]                                                                        WARNING:cassandra.cluster:Cluster.__init__ called with contact_points specified, but no load_balancing_po
+licy. In the next major version, this will raise an error; please specify a load-balancing policy. (contact_points = ['localhost'], lbp = None)                                                                   WARNING:cassandra.cluster:Downgrading core protocol version from 66 to 65 for 127.0.0.1:9042. To avoid th
+is, it is best practice to explicitly set Cluster(protocol_version) to the version supported by your cluster. http://datastax.github.io/python-driver/api/cassandra/cluster.html#cassandra.cluster.Cluster.protocol_version                                                                                                WARNING:cassandra.cluster:Downgrading core protocol version from 65 to 5 for 127.0.0.1:9042. To avoid thi
+s, it is best practice to explicitly set Cluster(protocol_version) to the version supported by your cluster. http://datastax.github.io/python-driver/api/cassandra/cluster.html#cassandra.cluster.Cluster.protocol_version                                                                                                 Keyspace 'spark_streams' created successfully.
+Table 'users_created' created successfully.
