@@ -166,7 +166,7 @@ pip install pyspark==3.5.1
 
 - jars file specified for Spark is wrong, `pyspark --version` currently at Spark3.5.1 and Scala2.12
 
-- `spark-master` and `spark-worker` can be seen *inactive* on Docker Desktop but it can be found at `localhost:9090` normally *(thus meaning it is active (iguess?))*
+- `spark-master` and `spark-worker` can be seen *inactive* on Docker Desktop but if it is found at `localhost:9090` normally then skip it *(thus meaning it is active (iguess?))*
  - *Also that mean the compose file built correctly*
 
 - Running `spark_stream` to create the keyspace and table *(commenting out lines beyond `insert_data()`)*
@@ -177,3 +177,12 @@ docker exec -it cassandra cqlsh -u cassandra -p cassandra localhost 9042
 # then
 cassandra@cqlsh> describe spark_streams.created_users;
 ```
+
+- Next step: `spark-submit --master spark://localhost:7077 spark_stream.py` *(`spark_stream` of commented version for testing purpose)*
+- Error connecting to Kafka topic -> Connector problem -> `spark-submit` do not automatically install the required jars
+- **New information:**
+  - This line is to validate the Spark version in the container when needed: `docker exec -it realtime-streaming-spark-master-1 spark-submit --version`
+  - Runnning `spark_stream` with WSL kafka server at 'broker:29092' wont be recognized
+- `spark-submit` cannot handle method `connect_to_kafka()`:
+  - tried `networks: confluent: bridge` -> webserver breaks down if without `compose down` -> all are healthy -> spark-submit fails -> tried `host.docker.internal:9092` -> fails
+  - trying `host.docker.internal:9092` without network-driver-bridge'

@@ -198,6 +198,10 @@ services:
       - ./cassandra:/home
     networks:
       - confluent
+  # test:
+  #   image: busybox
+  #   command: ["ping", "8.8.8.8"]
 
 networks:
   confluent:
+    # driver: bridge

@@ -5,6 +5,9 @@ from cassandra.auth import PlainTextAuthProvider
 from cassandra.cluster import Cluster
 from pyspark.sql import SparkSession, functions as F, types as T
 
+import platform
+LOCALLY = True if platform.release().lower().__contains__('wsl') else False
+
 def create_keyspace(session):
     session.execute("""
         CREATE KEYSPACE IF NOT EXISTS spark_streams
@@ -61,6 +64,12 @@ def insert_data(session, **kwargs):
 def create_spark_connection():
     s_conn = None
     try:
+        # s_conn = SparkSession.builder \
+        #     .appName('SparkDataStreaming') \
+        #     .config("spark.jars", "jars/spark-cassandra-connector_2.12-3.5.1.jar,"
+        #             "jars/spark-sql-kafka-0-10_2.12-3.5.1.jar") \
+        #     .config('spark.cassandra.connection.host', 'localhost') \
+        #     .getOrCreate()
         s_conn = SparkSession.builder \
             .appName('SparkDataStreaming') \
             .config('spark.jars.packages', "com.datastax.spark:spark-cassandra-connector_2.12:3.5.1,"
@@ -77,16 +86,24 @@ def create_spark_connection():
 def connect_to_kafka(spark_conn):
     spark_df = None
     try:
-        spark_df = spark_conn.readStream \
-            .format("kafka") \
-            .option("kafka.bootstrap.servers", "localhost:9092") \
-            .option("subscribe", "users_created") \
-            .option("startingOffsets", "earliest") \
-            .load()
+        if LOCALLY:
+            spark_df = spark_conn.readStream \
+                .format("kafka") \
+                .option("kafka.bootstrap.servers", "localhost:9092") \
+                .option("subscribe", "users_created") \
+                .option("startingOffsets", "earliest") \
+                .load()
+        else:
+            spark_df = spark_conn.readStream \
+                .format("kafka") \
+                .option("kafka.bootstrap.servers", "broker:29092") \
+                .option("subscribe", "users_created") \
+                .option("startingOffsets", "earliest") \
+                .load()
         logging.info("Connected to Kafka topic 'users_created' successfully.")
     except Exception as e:
         logging.error(f"Error connecting to Kafka topic: {e}")
-        # raise e
+        raise e
     
     return spark_df
 
@@ -118,28 +135,28 @@ def create_selection_df_from_kafka(spark_df):
     res = spark_df.selectExpr("CAST(value AS STRING)") \
         .select(F.from_json(F.col("value"), schema).alias("data")).select("data.*") \
         .withColumn("id", F.expr("uuid()"))
-    print (res)
+    print ('spark_df selection applied: ', res)
     return res
 
 if __name__ == "__main__":
     spark_conn = create_spark_connection()
     
     if spark_conn:
-        kafk_ss = connect_to_kafka(spark_conn)
-        selected_df = create_selection_df_from_kafka(kafk_ss)
+        spark_df = connect_to_kafka(spark_conn)
+        selected_df = create_selection_df_from_kafka(spark_df)
         cass_ss = create_cassandra_connection()
         
         if cass_ss:
             create_keyspace(cass_ss)
             create_table(cass_ss)
-            # insert_data(cass_ss)
+            if LOCALLY: exit(0)  # For development, exit after creating keyspace and table
 
-            # logging.info("Streaming is being started...")
+            logging.info("Streaming is being started...")
 
-            # streaming_query = (selected_df.writeStream.format("org.apache.spark.sql.cassandra")
-            #                     .option('checkpointLocation', '/tmp/checkpoint')
-            #                     .option('keyspace', 'spark_streams')
-            #                     .option('table', 'users_created')
-            #                     .start())
+            streaming_query = (selected_df.writeStream.format("org.apache.spark.sql.cassandra")
+                                .option('checkpointLocation', '/tmp/checkpoint')
+                                .option('keyspace', 'spark_streams')
+                                .option('table', 'users_created')
+                                .start())
 
-            # streaming_query.awaitTermination()
+            streaming_query.awaitTermination()
