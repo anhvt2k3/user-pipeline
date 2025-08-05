@@ -72,7 +72,7 @@ def create_spark_connection():
                         "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1") \
                 .config('spark.cassandra.connection.host', 'localhost') \
                 .getOrCreate()
-        elif LOCALLY:
+        else:
             import glob
             import os
             

@@ -212,6 +212,7 @@ cassandra@cqlsh> describe spark_streams.created_users;
   - Rerun testing on local: `python3 spark_stream.py 1 0`
   - Spark container jars location: `opt/bitnami/spark/jars/`
   - Adding this to compose: `volumes: - ./jars:/opt/bitnami/spark/jars`
+  -> Failed external jars declaration is still needed -> Always run in mode `1 1` or `1 0` or just `1`
 
 ## Wrapping up development (scratch)
 - Specify pipeline architecture
