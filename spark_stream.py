@@ -6,7 +6,7 @@ from cassandra.cluster import Cluster
 from pyspark.sql import SparkSession, functions as F, types as T
 
 import platform
-LOCALLY = True if platform.release().lower().__contains__('wsl') else False
+LOCALLY = False
 
 def create_keyspace(session):
     session.execute("""
@@ -64,10 +64,10 @@ def insert_data(session, **kwargs):
 def create_spark_connection():
     s_conn = None
     try:
+        # import glob
         # s_conn = SparkSession.builder \
         #     .appName('SparkDataStreaming') \
-        #     .config("spark.jars", "jars/spark-cassandra-connector_2.12-3.5.1.jar,"
-        #             "jars/spark-sql-kafka-0-10_2.12-3.5.1.jar") \
+        #     .config("spark.jars", ",".join(glob.glob("jars/*.jar"))) \
         #     .config('spark.cassandra.connection.host', 'localhost') \
         #     .getOrCreate()
         s_conn = SparkSession.builder \
@@ -86,7 +86,7 @@ def create_spark_connection():
 def connect_to_kafka(spark_conn):
     spark_df = None
     try:
-        if LOCALLY:
+        if True:
             spark_df = spark_conn.readStream \
                 .format("kafka") \
                 .option("kafka.bootstrap.servers", "localhost:9092") \

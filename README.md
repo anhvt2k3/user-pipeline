@@ -178,11 +178,32 @@ docker exec -it cassandra cqlsh -u cassandra -p cassandra localhost 9042
 cassandra@cqlsh> describe spark_streams.created_users;
 ```
 
-- Next step: `spark-submit --master spark://localhost:7077 spark_stream.py` *(`spark_stream` of commented version for testing purpose)*
+- Next step: `spark-submit --master spark://localhost:7077 spark_stream.py`
 - Error connecting to Kafka topic -> Connector problem -> `spark-submit` do not automatically install the required jars
+
 - **New information:**
   - This line is to validate the Spark version in the container when needed: `docker exec -it realtime-streaming-spark-master-1 spark-submit --version`
   - Runnning `spark_stream` with WSL kafka server at 'broker:29092' wont be recognized
+
 - `spark-submit` cannot handle method `connect_to_kafka()`:
   - tried `networks: confluent: bridge` -> webserver breaks down if without `compose down` -> all are healthy -> spark-submit fails -> tried `host.docker.internal:9092` -> fails
   - trying `host.docker.internal:9092` without network-driver-bridge'
+  - trying `spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1,com.datastax.spark:spark-cassandra-connector_2.12:3.5.1 spark_stream.py` -> worked
+- when it works, you shall see this:
+  - On `spark-submit` terminal
+    ```
+    25/08/05 11:31:34 INFO MicroBatchExecution: Streaming query made progress: {
+      "id" : "71a723a1-6b75-4964-bf07-7d1dd61e25a1",
+      "runId" : "e4a26f69-f5e5-4c41-8a90-1126b53498dc",
+      "name" : null,
+      "timestamp" : "2025-08-05T04:31:26.408Z",
+      "batchId" : 0,
+      "numInputRows" : 257,
+      "inputRowsPerSecond" : 0.0,
+      "processedRowsPerSecond" : 32.98254620123203,
+    ```
+  - Cassandra side:
+
+
+
+- Trying to embbed required connectors, thus minimize this line `spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1,com.datastax.spark:spark-cassandra-connector_2.12:3.5.1 spark_stream.py`
